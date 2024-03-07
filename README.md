@@ -1,1 +1,1 @@
-# BusinessMeetSummarizer
+# Meeting Summary Generator
