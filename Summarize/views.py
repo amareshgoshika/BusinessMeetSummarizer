@@ -1,13 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.http import HttpResponse
 
 from .decorators import authenticatedUser
 
 from .forms import StrAudioDataForm, UploadAudioFileForm
 
 from .models import AudioSummarizeModel
+
+from Tools.sendMails import sendEmails
+from Tools.summarizeText import toSummarize
+from Tools.punctuate import punctuateFunc
+import speech_recognition as sr
 
 
 
@@ -100,7 +104,7 @@ def recognizeTextView(HttpRequest, id):
     if audioObj.isRecognized :
         messages.info(HttpRequest, 'Already Converted to Text.')
     else:
-        audioObj.recognizedText = punctuateFunc(toText(audioObj.audioFile))
+        audioObj.recognizedText = punctuateFunc(wav_to_text(audioObj.audioFile))
         audioObj.isRecognized = True
         audioObj.save(update_fields = ['recognizedText', 'isRecognized'])
     context = {
@@ -171,4 +175,14 @@ def sendMailsView(HttpRequest, id):
         messages.info(HttpRequest, 'Unable to Send E-Mails. Did you summarized ?')
     return render(HttpRequest, 'emails.html', {})
 
+def wav_to_text(wav_file):
 
+    r = sr.Recognizer()
+
+    # open the file
+    with sr.AudioFile(wav_file) as source:
+        # listen for the data (load audio to memory)
+        audio_data = r.record(source)
+        # recognize (convert from speech to text)
+        text = r.recognize_google(audio_data)
+    return text
