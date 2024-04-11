@@ -123,6 +123,8 @@ def summarizeTextView(HttpRequest, id):
             messages.info(HttpRequest, 'Already Summarized.')
         else:
             audioObj.summarizedText = toSummarize(audioObj.recognizedText)
+            print("hello" + audioObj.summarizedText)
+            print("hello1" + audioObj.recognizedText)
             audioObj.isSummarized = True
             audioObj.save(update_fields = ['summarizedText', 'isSummarized'])
     else:
@@ -164,7 +166,7 @@ def sendMailsView(HttpRequest, id):
             </tr>
         </table>
         <h4>Meeting Summary</h4>
-        <p>{audioObj.summarizedText}</p>
+        <p>{audioObj.recognizedText}</p>
     </body>
 </html>
             '''
